@@ -21,3 +21,7 @@ python unittest template
 -------------------------
 * programming unittest template files
 
+
+personal hours worked management tool
+---------------------------------------
+* excel management tool

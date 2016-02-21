@@ -1,6 +1,11 @@
 system operation tools
 ========================
 
+python-scripts
+------------------
+* python some useful scripts
+
+
 python apache log parser
 --------------------------
 * count access number from apache log

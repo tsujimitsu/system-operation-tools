@@ -4,6 +4,8 @@ system operation tools
 python-scripts
 ------------------
 * python some useful scripts
+* python unittest sample
+* python start project sample
 
 
 python apache log parser
@@ -20,11 +22,6 @@ python detect file code tool
 python check file format tool
 -------------------------------
 * check file format
-
-
-python unittest template
--------------------------
-* programming unittest template files
 
 
 personal hours worked management tool

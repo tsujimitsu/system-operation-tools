@@ -19,6 +19,20 @@ lastlog
 # chmod 664 /var/log/lastlog
 ```
 
+
+* problem
+```shell
+# lastlog
+root                                       **Never logged in**
+```
+
+* solution
+```shell
+# vim /etc/pam.d/su
+session   optional   pam_lastlog.so  nowtmp
+```
+
+
 * reference
 
 1. [Users logging into the server with ssh are not recorded in lastlog](https://www.novell.com/support/kb/doc.php?id=7014881)

@@ -13,9 +13,12 @@ lastlog
 
 * solution
 
-    # touch /var/log/lastlog
-    # chgrp utmp /var/log/lastlog
-    # chmod 664 /var/log/lastlog
+```shell
+# touch /var/log/lastlog
+# chgrp utmp /var/log/lastlog
+# chmod 664 /var/log/lastlog
+```
 
 * reference
-[Users logging into the server with ssh are not recorded in lastlog](https://www.novell.com/support/kb/doc.php?id=7014881)
+
+- [Users logging into the server with ssh are not recorded in lastlog](https://www.novell.com/support/kb/doc.php?id=7014881)

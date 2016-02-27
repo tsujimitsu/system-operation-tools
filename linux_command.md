@@ -6,8 +6,10 @@ lastlog
 
 * problem
 
-    # lastlog
-    /var/log/lastlog: No such file or directory
+```shell
+# lastlog
+/var/log/lastlog: No such file or directory
+```
 
 * solution
 

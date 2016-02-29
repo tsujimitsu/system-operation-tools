@@ -41,8 +41,7 @@ session   optional   pam_lastlog.so  nowtmp
 sshd
 ------
 
-* exercises
-- restrict ssh login only one user based on user source ip address.
+* exercises: restrict ssh login only one user based on user source ip address.
 
 * solution
 

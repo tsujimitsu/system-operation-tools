@@ -36,3 +36,20 @@ session   optional   pam_lastlog.so  nowtmp
 * reference
 
 1. [Users logging into the server with ssh are not recorded in lastlog](https://www.novell.com/support/kb/doc.php?id=7014881)
+
+
+sshd
+------
+
+* exercises
+- restrict ssh login only one user based on user source ip address.
+
+* solution
+
+```shell
+
+Match Address *,!192.168.1.0/27,!192.168.2.0/27 User hogehoge
+  PasswordAuthentication no
+  PubkeyAuthentication no
+
+```

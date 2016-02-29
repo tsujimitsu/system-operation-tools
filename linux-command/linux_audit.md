@@ -41,7 +41,7 @@ centos65 pts/4        192.168.1.1   Tue Mar  1 00:51 - 00:59  (00:07)
 
 * solution
 ```shell
-last -Fw
+# last -Fw
 centos65 pts/4        192.168.1.1   Tue Mar  1 00:51:41 2016 - Tue Mar  1 00:59:07 2016  (00:07)
 ```
 

@@ -21,7 +21,7 @@ python detect file code tool
 
 python check file format tool
 -------------------------------
-* check file format
+* check file formats
 
 
 personal hours worked management tool

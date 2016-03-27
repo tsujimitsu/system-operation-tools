@@ -1,0 +1,41 @@
+# usage
+# 
+# "C:\Program Files (x86)\WinSCP\WinSCP.com" /script=winscp.txt /xmllog="retrieve_logs.log"
+# 
+# reference
+# 
+# http://winscp.net/eng/docs/scripting#commands
+# http://qiita.com/aimoriu/items/a36b231d3fd26b222452
+# http://d.hatena.ne.jp/uriyuri/20090319/1237408576
+# https://osdn.jp/projects/winscp/wiki/script_commands
+#
+
+
+option batch abort
+option confirm off
+
+
+# connect to server use private key
+open scp://username@192.168.1.1:20022 -privatekey=aws-centos65.ppk -hostkey="ssh-rsa 2048 28:10:d4:15:56:0e:35:1f:d8:99:09:7d:b6:8b:ee:9b"
+
+# connect to server use password
+# open scp://username:password@192.168.1.1:22 -hostkey="ssh-rsa 2048 28:10:d4:15:56:0e:35:1f:d8:99:09:7d:b6:8b:ee:9b"
+
+
+# download file
+# cd /tmp
+# option transfer binary
+option transfer automatic
+get /tmp/download_test.txt C:\work\
+
+
+# upload file
+put "C:\work\upload_test.txt" /tmp/
+
+
+# disconnect
+close
+
+
+# end of script
+exit

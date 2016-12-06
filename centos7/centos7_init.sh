@@ -36,11 +36,19 @@ systemctl stop NetworkManager
 systemctl enable network
 systemctl start network
 
+# Package
+yum -y update
+yum -y install iptables-services
+yum -y install git
+
 # Firewall
 systemctl disable firewalld
 systemctl stop firewalld
 systemctl start iptables
 systemctl enable iptables
+iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+service iptables save
+systemctl restart iptables
 
 # SELinux
 sed -i.bak "/SELINUX/s/enforcing/permissive/g" /etc/selinux/config
@@ -48,9 +56,4 @@ setenforce 0
 
 # Time
 timedatectl set-timezone Asia/Tokyo
-
-# Package
-yum -y update
-yum -y install iptables-services
-yum -y install git
 

@@ -140,7 +140,7 @@ etherpad-mariadb:
   image: mariadb:latest
   container_name: etherpad-mariadb
   volumes:
-    - /opt/docker-volumes/ehterpad-mariadb:/var/lib/mysql:rw
+    - /opt/docker-volumes/etherpad-mariadb:/var/lib/mysql:rw
   ports:
     - "3309:3306"
   environment:

@@ -1,0 +1,15 @@
+rsync
+===
+```
+yum -y install rsync
+rsync -av --delete from/ to/
+rsync -av --exclude='exclude.*' --delete from/ to/
+
+rsync -av --delete from/ 192.168.33.12:to/
+
+crontab -e
+*/10 * * * * rsync -arz -e "ssh -p 22" --delete /opt/docker-volumes/ root@192.168.0.206:/opt/docker-volumes/ > /dev/null 2>&1
+```
+
+* http://blog.amedama.jp/entry/2015/08/26/210129
+* https://orebibou.com/2015/06/rsync%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%A7%E8%A6%9A%E3%81%88%E3%81%A6%E3%81%8A%E3%81%8D%E3%81%9F%E3%81%84%E4%BD%BF%E3%81%84%E6%96%B910%E5%80%8B/

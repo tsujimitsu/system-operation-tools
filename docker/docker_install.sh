@@ -16,6 +16,7 @@ sudo systemctl start docker
 sudo systemctl enable docker
 
 curl -L "https://github.com/docker/compose/releases/download/1.9.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+#curl -L "https://github.com/tsujimitsu/system-operation-tools/raw/master/docker/1.9.0/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 
 docker version

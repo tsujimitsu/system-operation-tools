@@ -1,0 +1,99 @@
+# IRC Server(ngircd)
+# http://www.yukun.info/blog/2016/02/irc-centos-ngircd-install.html
+# http://dev.classmethod.jp/cloud/aws/aws-cfn-advent-calendar-2013-ngircd/
+# http://qiita.com/toshihirock/items/bcb68d5c1f297926ece5
+# http://serverfault.com/questions/183157/send-message-to-irc-channel-from-bash
+# http://limechat.net/
+
+# Tips
+# if you add new channel, channel name start "#"
+
+yum -y install epel-release
+yum -y install ngircd
+
+cp -p /etc/ngircd.conf /etc/ngircd.conf.back
+sed -i -e "s/Listen =/;Listen =/" /etc/ngircd.conf
+
+systemctl enable ngircd.service
+systemctl start ngircd.service
+
+sed -i -e "/^-A INPUT -i lo -j ACCEPT$/a -A INPUT -p tcp -m state --state NEW -m tcp --dport 6667 -j ACCEPT" /etc/sysconfig/iptables
+systemctl restart iptables
+
+ps -aux | grep ngircd | grep -v grep
+netstat -lnpt | grep 6667
+
+
+# Tiarra
+sed -i -e "/^-A INPUT -i lo -j ACCEPT$/a -A INPUT -p tcp -m state --state NEW -m tcp --dport 6668 -j ACCEPT" /etc/sysconfig/iptables
+systemctl restart iptables
+cd /opt
+wget http://www.clovery.jp/tiarra/archive/2010/02/tiarra-20100212.tar.gz
+tar -zxvf tiarra-20100212.tar.gz
+rm -f tiarra-20100212.tar.gz
+cd tiarra-20100212
+cp -p sample.conf tiarra.conf
+./tiarra --make-password
+vi 
+    general {
+      nick: irclog
+      user: irclog
+      name: irclog
+      tiarra-port: 6668
+      tiarra-password: lUcQmXZ.Wlzaw
+    }
+    
+    networks {
+      name: cicd
+      #name: 2ch
+    }
+    
+    cicd {
+      server: localhost 6667
+      in-encoding: utf8
+      out-encoding: utf8
+    }
+    
+    + Log::Channel {
+    }
+    
+    + Log::Recent {
+    }
+    
+    + Channel::Join::Connect {
+      channel: #cicd@cicd
+    }
+
+./tiarra &
+
+
+# irc-log-viewer
+sed -i -e "/^-A INPUT -i lo -j ACCEPT$/a -A INPUT -p tcp -m state --state NEW -m tcp --dport 8000 -j ACCEPT" /etc/sysconfig/iptables
+systemctl restart iptables
+yum -y install php
+cd /opt
+git clone https://github.com/kenjis/irc-log-viewer
+cd irc-log-viewer
+vi index.php
+    // for Original sample logs
+    //$logFormat = new LogFormatOrig($channel);
+    // for Tiarra logs
+    $logFormat = new LogFormatTiarra('');
+
+vi local.sh
+    APP_LOGDIR=/opt/tiarra-20100212/log/#cicd@cicd \
+    APP_CHANNEL=cicd \
+    APP_NETWORK=192.168.0.211
+    php -S 192.168.0.211:8000 router.php
+
+vi index.php
+    $logdir  = getenv('APP_LOGDIR')  ? getenv('APP_LOGDIR')  : dirname(__FILE__);
+    //$logdir  = getenv('APP_LOGDIR')  ? getenv('APP_LOGDIR')  : dirname(__FILE__)."/sample-logs";
+
+./local.sh &
+
+
+# irc cli client
+yum -y install nc
+export IRC_MSG="Hello IRC World"
+echo -e 'USER bot bot bot bot\nNICK bot\nNS IDENTIFY password\nJOIN #cicd\nPRIVMSG #cicd :'$IRC_MSG'\nQUIT\n' \ | nc 192.168.0.211 6667

@@ -1,0 +1,162 @@
+openldap:
+  restart: always
+  image: osixia/openldap:latest
+  container_name: openldap
+  environment:
+    - LDAP_ORGANISATION=DOMAIN
+    - LDAP_DOMAIN=DOMAIN.COM
+    - LDAP_ADMIN_PASSWORD=password
+  volumes:
+    - /opt/docker-volumes/ldap/lib:/var/lib/ldap
+    - /opt/docker-volumes/ldap/sldapd.d:/etc/ldap/slapd.d
+    - /opt/docker-volumes/ldap/certs:/container/service/slapd/assets/certs
+  ports:
+    - "389:389"
+
+phpldapadmin:
+  restart: always
+  image: osixia/phpldapadmin:latest
+  container_name: phpldapadmin
+  environment:
+    - PHPLDAPADMIN_LDAP_HOSTS=openldap
+    - PHPLDAPADMIN_HTTPS=false
+  links:
+    - openldap
+  ports:
+    - "8083:80"
+
+redmine-mariadb:
+  restart: always
+  image: mariadb:latest
+  container_name: redmine-mariadb
+  volumes:
+    - /opt/docker-volumes/redmine-mariadb:/var/lib/mysql:rw
+  ports:
+    - "3307:3306"
+  environment:
+    - MYSQL_DATABASE=redmine
+    - MYSQL_USER=redmine
+    - MYSQL_PASSWORD=password
+    - MYSQL_ROOT_PASSWORD=password
+
+redmine:
+  restart: always
+  image: redmine:latest
+  container_name: redmine
+  links:
+    - redmine-mariadb:mysql
+    - openldap
+  volumes:
+    - /opt/docker-volumes/redmine:/usr/src/redmine/files
+  ports:
+    - "3000:3000"
+  environment:
+    - DB_NAME=redmine
+    - DB_USER=redmine
+    - DB_PASS=password
+    - TZ=Asia/Tokyo
+
+gitlab-mariadb:
+  restart: always
+  image: mariadb:latest
+  container_name: gitlab-mariadb
+  volumes:
+    - /opt/docker-volumes/gitlab-mariadb:/var/lib/mysql:rw
+  ports:
+    - "3308:3306"
+  environment:
+    - MYSQL_DATABASE=gitlab
+    - MYSQL_USER=gitlab
+    - MYSQL_PASSWORD=password
+    - MYSQL_ROOT_PASSWORD=password
+
+gitlab-redis:
+  restart: always
+  image: redis:latest
+  container_name: gitlab-redis
+  volumes:
+    - /opt/docker-volumes/gitlab-redis:/var/lib/redis
+
+gitlab:
+  restart: always
+  image: gitlab/gitlab-ce:latest
+  container_name: gitlab
+  links:
+    - gitlab-mariadb:mysql
+    - gitlab-redis:redisio
+    - openldap
+  volumes:
+    - /opt/docker-volumes/gitlab/config:/etc/gitlab
+    - /opt/docker-volumes/gitlab/logs:/var/log/gitlab
+    - /opt/docker-volumes/gitlab/data:/var/opt/gitlab
+  ports:
+    - "80:80"
+  environment:
+    - LDAP_ENABLED=true
+    - LDAP_HOST=openldap
+    - LDAP_PORT=389
+    - LDAP_METHOD=plain
+    - LDAP_UID=uid
+    - LDAP_BIND_DN=cn=admin,dc=domain,dc=com
+    - LDAP_PASS=p@ssw0rd
+    - LDAP_ACTIVE_DIRECTORY=false
+    - LDAP_ALLOW_USERNAME_OR_EMAIL_LOGIN=false
+    - LDAP_BASE=dc=domain,dc=com
+
+jenkins:
+  restart: always
+  image: jenkins:latest
+  container_name: jenkins
+  links:
+    - openldap
+  volumes:
+    - /opt/docker-volumes/jenkins:/var/jenkins_home
+  ports:
+    - "8081:8080"
+    - "50000:50000"
+
+gerrit:
+  restart: always
+  image: gerritforge/gerrit-centos7:latest
+  container_name: gerrit
+  links:
+    - openldap
+  volumes:
+    - /opt/docker-volumes/gerrit:/var/gerrit/review_site
+  ports:
+    - "8082:8080"
+    - "29418:29418"
+  environment:
+    - AUTH_TYPE=LDAP
+    - LDAP_SERVER=openldap
+    - LDAP_ACCOUNTBASE=ou=people,dc=domain,dc=com
+    - LDAP_GROUPBASE=ou=groups,dc=domain,dc=com
+    - LDAP_USERNAME=cn=admin,dc=domain,dc=com
+    - LDAP_PASSWORD=p@ssw0rd
+    - LDAP_ACCOUNTFULLNAME=givenName
+
+etherpad-mariadb:
+  restart: always
+  image: mariadb:latest
+  container_name: etherpad-mariadb
+  volumes:
+    - /opt/docker-volumes/etherpad-mariadb:/var/lib/mysql:rw
+  ports:
+    - "3309:3306"
+  environment:
+    - MYSQL_DATABASE=etherpad
+    - MYSQL_USER=etherpad
+    - MYSQL_PASSWORD=password
+    - MYSQL_ROOT_PASSWORD=password
+
+etherpad:
+  restart: always
+  image: tvelocity/etherpad-lite:latest
+  container_name: etherpad
+  links:
+    - etherpad-mariadb:mysql
+  ports:
+    - "9001:9001"
+  environment:
+    - ETHERPAD_ADMIN_PASSWORD=password
+  

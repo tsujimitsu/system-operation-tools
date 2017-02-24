@@ -1,0 +1,83 @@
+install docker-compose
+---
+service iptables start
+vi /etc/sysconfig/iptables
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 3000 -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 8080 -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 8081 -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 8082 -j ACCEPT
+-A INPUT -p tcp -m state --state NEW -m tcp --dport 9001 -j ACCEPT
+service iptables restart
+service docker restart
+
+curl -L "https://github.com/docker/compose/releases/download/1.9.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+run docker-compose
+---
+mkdir -p /opt/docker-volumes/jenkins
+chown 1000 /opt/docker-volumes/jenkins
+vi docker-compose.yml
+docker-compose up -d
+docker-compose ps
+docker exec -it jenkins /bin/bash
+cat /var/jenkins_home/secrets/initialAdminPassword
+exit
+docker-compose down
+#docker-compose rm
+
+サービス
+---
+redmineの初期アカウントはadmin/admin
+gitlabの初期アカウントはroot/（パスワードは初期ログイン時に設定）
+ldapのアカウントは cn=admin,dc=domain,dc=com/password (p@ssw0rd)
+
+openldap
+---
+create new entry here
+  Generic: Posix Group
+  Generic: User Account
+    add new attribute
+      email
+
+redmine
+---
+LDAP認証設定
+名称：openldap
+ホスト：openldap
+ポート：389
+アカウント：cn=admin,dc=domain,dc=com
+パスワード：password
+検索範囲：dc=domain,dc=com
+ログイン名属性：cn
+名前：givenName
+苗字：sn
+メールアドレス：mail
+
+gitlab
+---
+admin area
+
+
+jenkins
+---
+manage jenkins
+Configure Global Security
+security realm
+  ldap
+    server: ldap://openldap:389
+    root dn: dc=domain,dc=com
+    user search base: ou=Users
+    user search filter: uid={0}
+    group search base: ou=Groups
+    group search filter: 
+    group membership: member={0}
+    manager dn: cn=admin,dc=domain,dc=com
+    manager password: p@ssw0rd
+
+gerrit
+---
+
+http://qiita.com/RyoMa_0923/items/9b5d2c4a97205692a560
+http://qiita.com/nexkeh/items/02a4d6c33d884bda1b23

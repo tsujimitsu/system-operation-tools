@@ -57,3 +57,5 @@ setenforce 0
 # Time
 timedatectl set-timezone Asia/Tokyo
 
+# Console
+echo "PS1='[\`date +%y-%m-%d_%k\:%M\:%S\` \u@\h \W]\\$ '" >> /root/.bashrc
